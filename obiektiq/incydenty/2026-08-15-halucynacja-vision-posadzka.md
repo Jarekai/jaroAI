@@ -105,12 +105,69 @@ oceny — odesłanie bez oceny jest błędem i to właśnie zrobił agent w tym 
 - Oba rekordy rozmowy w LOGU oznaczone `Ocena = Nauczone`, `Przeniesione do Luk = tak`,
   z wpisanym „Co powinno byc". Nie zaśmiecają raportu porannego.
 
+## Iteracja 2 — retest 32845 i błąd odwrotny
+
+Retest po pierwszej poprawce **usunął halucynację**: żadnego wycieku, plamy zaklasyfikowane
+jako `SUCHE ZABRUDZENIE LUB ZUŻYCIE`, krzesło opisane neutralnie („zielone krzesło przy
+regale"), bez przypisywania mu roli blokady.
+
+**Pojawił się jednak błąd odwrotny — uspokojenie na wyrost.** Vision orzekł:
+
+> (3) STAN POSADZKI: (…) **Płaszczyzna równa, brak ubytków i klawiszowania.**
+> (5) RYZYKO: **BRAK WIDOCZNEGO ZAGROŻENIA.**
+
+a Mózg to wzmocnił: *„Stan techniczny posadzki jest bezpieczny — płytki leżą równo, nie ma
+ryzyka potknięcia"* oraz zbył łaty zdaniem *„z tym już nic nie zrobisz bez wymiany płytek"*.
+
+Dostawszy prawo do odpowiedzi „brak zagrożenia", model zaczął jej używać jako wygodnego
+domyślnego wniosku zamiast przejść przez realną kontrolę stanu.
+
+### Ocena właściciela obiektu na tych samych zdjęciach (Jarek, 15.08.2026)
+
+1. Płytki **nie są równe** i to widać.
+2. Są płytki **z otworami**, najprawdopodobniej po zdemontowanym stelażu. Gromadzi się w nich
+   brud i **trzeba je naprawić** — to ważne dla managera budynku.
+3. **Różne kolory płytek** to ślad napraw i wymiany starych fragmentów, a **styk starej
+   i nowej okładziny ma wyraźny kant**, czyli kolejny uskok.
+4. **Rdza przy lodówkach** pochodzi prawdopodobnie od śrub osadzonych w płytkach, a plamy
+   osadu to **złe mycie** — maszyna nie dojeżdża do rogu, drzwi urządzeń blokują bliski
+   podjazd, firma **nie domywa kantów**, a za to się płaci. Poważny błąd higieniczny.
+
+### Dlaczego uskok nie jest kwestią estetyki
+
+- ssawa maszyny **podskakuje na uskoku** i przestaje zbierać wodę → zostaje brudna woda →
+  mokra, śliska posadzka → upadek klienta
+- nierówne fugi zatrzymują wodę po przejeździe maszyny → ten sam skutek
+- **wózek z towarem podskakuje** na kancie → towar może się uszkodzić
+- **osoba starsza szurająca nogami lub idąca z balkonikiem** zahacza o kant i przewraca się
+
+### Poprawka (opublikowana, wersja `2b136b79`)
+
+- **Zasada działa w obie strony.** Zdania „płaszczyzna równa", „brak ubytków", „brak ryzyka
+  potknięcia" to twierdzenia o **braku** wady i wymagają takiego samego dowodu jak twierdzenie
+  o wadzie. Gdy kąt zdjęcia lub oświetlenie nie pozwalają rozstrzygnąć — `NIE DA SIĘ OCENIĆ
+  ZE ZDJĘCIA`, nigdy uspokajanie. Uspokojenie na wyrost jest groźniejsze niż fałszywy alarm,
+  bo nie prowokuje weryfikacji.
+- **Rozpisana lista kontrolna stanu posadzki** z wymuszoną odpowiedzią przy KAŻDYM punkcie:
+  uskoki (ze szczególną uwagą na styk łat z posadzką oryginalną), klawiszowanie, otwory
+  i ubytki po mocowaniach wraz z informacją, czy zbiera się w nich brud, fugi, powierzchnia,
+  płytki odbiegające kolorem, rdzawe ślady wokół śrub, osad w narożnikach i pod krawędzią
+  urządzeń, wpusty i progi. Zakaz pomijania punktu i zbiorczego „wszystko w porządku".
+- **Uskok, wyrwa lub otwór w ciągu pieszym musi podnieść poziom ryzyka**, nawet gdy posadzka
+  jest czysta.
+
+Karta CORE rozbudowana o katalog uszkodzeń, skutki uskoku, otwory jako zadanie naprawcze
+(punktowe uzupełnienie ubytku, a nie wymiana całej posadzki) oraz niedomyte kanty jako
+najłatwiejszy do udowodnienia zarzut wobec wykonawcy. Druga luka zapisana w LUKI WIEDZY.
+
 ## Do wykonania przez Jarka
 
-- [ ] Retest na tych samych trzech zdjęciach. Oczekiwane: brak wycieku, brak krzesła
-      blokującego przejście, opis stanu posadzki, uzasadnienie padów miękkich lub szczotek.
-- [ ] Sprawdzić, czy `BRAK WIDOCZNEGO ZAGROŻENIA` nie tłumi realnych zgłoszeń — kontrolnie
-      wysłać zdjęcie faktycznego zacieku albo zaklinowanych drzwi ppoż.
+- [ ] **Retest po iteracji 2, w NOWEJ sesji.** Redis trzyma pamięć per `sessionId`, więc
+      w dotychczasowej sesji stary opis zdjęć nadal siedzi w kontekście i może zaburzyć wynik.
+      Oczekiwane: wypunktowane uskoki, otwory po mocowaniach i kant na styku łat; brak zdania
+      o równej i bezpiecznej posadzce; podniesiony poziom ryzyka mimo czystości.
+- [ ] Kontrolnie wysłać zdjęcie **faktycznego** zacieku albo zaklinowanych drzwi ppoż. —
+      sprawdzić, czy `BRAK WIDOCZNEGO ZAGROŻENIA` nie tłumi realnych zgłoszeń.
 
 ## Znaleziska poboczne — do decyzji Jarka
 
